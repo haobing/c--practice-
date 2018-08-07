@@ -1,0 +1,61 @@
+1、***********************************************************************************
+#include<iostream>
+using namespace std;
+
+class base
+{
+	public:
+		base(int data):_ma(data)
+		{
+			cout<<"base()"<<endl;
+		}
+		virtual ~base()
+		{
+			cout<<"~base()"<<endl;
+		}
+		
+		virtual void show(int i=10)
+		{
+			cout<<"base::show(),i="<<i<<endl;
+		}
+	private:
+		int _ma;
+};
+
+class drive:public base
+{
+	public:
+		drive(int data1,int data2):base(data1),_mb(data2)
+		{
+			cout<<"drive()"<<endl;
+		}
+		~drive()
+		{
+			cout<<"~drive()"<<endl;
+		}
+		virtual void show(int i=20)
+		{
+			cout<<"deive::show(),i="<<i<<endl;
+		}
+		private:
+			int _mb;
+};
+
+int main()
+{
+	base *p=new drive(10,10);
+	p->show();
+	delete p;
+	return 0;
+}
+	
+输出：
+base()
+drive()
+deive::show(),i=10
+~drive()
+~base()
+p->Show();函数有默认的参数，在调用过程中没有传递参数。编译期进行形参压栈，
+已经将基类的Show()函数的10压进栈了，调用派生类中的Show时，不再对其进行初始化。
+若要对虚函数中的值进行赋值，不要在基类虚函数的参数列表中赋默认值。
+2、*********************************************************************************************************
