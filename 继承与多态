@@ -59,3 +59,76 @@ p->Show();函数有默认的参数，在调用过程中没有传递参数。编�
 已经将基类的Show()函数的10压进栈了，调用派生类中的Show时，不再对其进行初始化。
 若要对虚函数中的值进行赋值，不要在基类虚函数的参数列表中赋默认值。
 2、*********************************************************************************************************
+#include<iostream>
+using namespace std;
+
+class base
+{
+	public:
+		base(int data):_ma(data)
+		{
+			cout<<"base()"<<endl;
+		}
+		virtual ~base()
+		{
+			cout<<"~base"<<endl;
+		}
+		
+		virtual void show()
+		{
+			cout<<"base::show"<<endl;
+		}
+		
+		void show(int i)
+		{
+			cout<<"base:show(i)"<<endl;
+		}
+	private:
+		int _ma;
+};
+
+class drive:public base
+{
+	public:
+		drive(int data1,int data2):base(data1),_mb(data2)
+		{
+			cout<<"drive()"<<endl;
+		}
+		
+		~drive()
+		{
+			cout<<"~drive()"<<endl;
+		}
+		
+		 private:
+			 virtual void show()
+			{
+				cout<<"drive::show()"<<endl;
+			}
+		private:
+			int _mb;
+};
+int main()
+{
+	base *p=new drive(10,20);
+	p->show();
+	delete p;
+	return 0;
+}
+
+输出：
+base()
+drive()
+drive::show()
+~drive()
+~base
+正确的解释：派生类中虚函数的访问权限是在编译阶段由基类确定的，在运行阶段不再检查访问权限，
+所以，虚函数的访问权限与派生类就没关系了。
+
+
+更进一步的解释：当p->show()时，首先通过这个对象的vptr找到对应的vtable, 
+因为它实际上是drive对象，所以找到的是drive的虚表，所有的drive对象都共用这个虚表。
+又因为是通过基类的指针调用的，编译器从base的类型信息中查到show是虚表中的第一个entry, 
+而且这个函数的访问权限是public的，所以首先它让你调用，其次，从虚表第一个entry中取出的函数地址对应着drive::show, 
+所以最后是drive::show被调用，drive::show在drive中的访问权限在这里是无关的了，编译器根本不会费事去查询这一信息。
+甚至这一信息可能根本编译器也不知道。
