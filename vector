@@ -1,0 +1,29 @@
+
+可以把vector看作数组
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int main()
+{
+	vector<int> ve(10,1);
+	vector<int> ve1=ve;
+	vector<int> ve2(ve);
+	int i = 0;
+	for(i = 0; i < 10&&i<ve.size(); i++)
+	{
+		cout<<"ve("<<i<<")"<<"="<<ve[i]<<endl;
+		ve.push_back(i);
+		
+	}
+	
+	vector<int>::iterator a=ve.begin();
+	for(a;a<ve.end();a++)
+	{
+		cout<<"ve("<<i<<")"<<"="<<*a<<endl;
+		
+	}
+	
+	return 0;
+}
