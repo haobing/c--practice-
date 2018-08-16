@@ -1,4 +1,41 @@
 
+一、 定义和初始化
+vector< typeName > v1;       //默认v1为空，故以下的赋值是错误的v1[0]=5;
+vector<typeName>v2(v1); 或v2=v1;或vector<typeName> v2(v1.begin(), v1.end());//v2是v1的一个副本，若v1.size（）>v2.size()则赋值后v2.size()被扩充为v1.size()。
+vector< typeName > v3(n,i);//v3包括n个值为i的typeName类型元素
+vector< typeName > v4(n); //v4含有n个值为0的元素
+int a[4]={0,1,2,3,3}; vector<int> v5(a,a+5);//v5的size为5，v5被初始化为a的5个值。后一个指针要指向将被拷贝的末元素的下一位置。
+vector<int> v6(v5);//v6是v5的拷贝
+vector< 类型 > 标识符（最大容量，初始全部值）；
+
+ 
+
+二、 值初始化
+1>     假设没有指定元素初始化式，标准库自行提供一个初始化值进行值初始化。
+2>     假设保存的式含有构造函数的类类型的元素，标准库使用该类型的构造函数初始化。
+3>     假设保存的式没有构造函数的类类型的元素，标准库产生一个带初始值的对象，使用这个对象进行值初始化。
+
+
+三、vector对象最重要的几种操作
+1. v.push_back(t)    在容器的最后加入一个值为t的数据，容器的size变大。
+    另外list有push_front()函数，在前端插入，后面的元素下标依次增大。
+2. v.size()        返回容器中数据的个数，size返回对应vector类定义的size_type的值。v.resize(2*v.size)或                  
+
+v.resize(2*v.size, 99) 将v的容量翻倍(并把新元素的值初始化为99)
+3. v.empty()     推断vector是否为空
+4. v[n]           返回v中位置为n的元素
+5. v.insert(pointer,number, content)    向v中pointer指向的位置插入number个content的内容。
+    还有v. insert(pointer, content)，v.insert(pointer,a[2],a[4])将a[2]到a[4]三个元素插入。
+6. v.pop_back()    删除容器的末元素，并不返回该元素。
+7.v.erase(pointer1,pointer2) 删除pointer1到pointer2中间（包含pointer1所指）的元素。
+   vector中删除一个元素后，此位置以后的元素都须要往前移动一个位置，尽管当前迭代器位置没有自己主动加1，
+   可是因为兴许元素的顺次前移，也就相当于迭代器的自己主动指向下一个位置一样。
+8. v1==v2          推断v1与v2是否相等。
+9. ！=、<、<=、>、>=      保持这些操作符惯有含义。
+10. vector<typeName>::iterator p=v1.begin( ); p初始值指向v1的第一个元素。*p取所指向元素的值。
+      对于const vector<typeName>仅仅能用vector<typeName>::const_iterator类型的指针訪问。
+11.   p=v1.end( ); p指向v1的最后一个元素的下一位置。
+12.v.clear()      删除容器中的全部元素。12.v.clear()      删除容器中的全部元素。
 可以把vector看作数组
 #include <iostream>
 #include <vector>
