@@ -1,4 +1,4 @@
-
+可以把vector看作数组
 一、 定义和初始化
 vector< typeName > v1;       //默认v1为空，故以下的赋值是错误的v1[0]=5;
 vector<typeName>v2(v1); 或v2=v1;或vector<typeName> v2(v1.begin(), v1.end());//v2是v1的一个副本，若v1.size（）>v2.size()则赋值后v2.size()被扩充为v1.size()。
