@@ -77,3 +77,81 @@ int main()
     
     mapstudent.erase(mapstudent.begin(),mapstudent.end());
 	}
+
+
+map的键为结构体--------------------------------------------------------------------------------------
+
+
+#include<map>
+#include<string>
+#include<iostream>
+
+#include <cstring>
+using namespace std;
+
+
+typedef struct ip_tuple
+{
+	int src_port;
+	int dst_port;
+	char *src_ip;
+	bool operator<(const ip_tuple& other) const
+	{
+		if(src_port < other.src_port)
+			{
+				return true;
+			}
+			else if(src_port==other.src_port)
+			{
+				if(dst_port<other.dst_port)
+				{
+					return true;
+				}
+				else if(dst_port==other.dst_port)
+				{
+					if(strcmp(src_ip,other.src_ip)!=0)
+					{
+						return true;
+					}
+				}
+			}
+		return false;
+	}
+}IPTUPLE;
+
+int main()
+{
+	map<IPTUPLE,int>m_roadmap;
+	for(int i=0;i<6;i++)
+	{
+		IPTUPLE it;
+		it.src_port=i;
+		it.dst_port=i*10;
+		it.src_ip = new char(20);
+		if(i==1)
+        it.src_ip="aaa";
+        if(i==2)
+        it.src_ip="bbb";
+        if(i==3)
+        it.src_ip="ccc";
+        if(i==4)
+        it.src_ip="ddd";
+        if(i==5)
+        it.src_ip="bbb";
+       
+
+		m_roadmap.insert(make_pair(it,i*100));
+	}
+	
+	IPTUPLE ite;
+	ite.src_port=2;
+	ite.dst_port=20;
+	ite.src_ip="bbb";
+	
+	map<IPTUPLE,int>::iterator itor;
+		itor=m_roadmap.find(ite);
+		for(itor;itor!=m_roadmap.end();itor++)
+		{
+			cout<<itor->first.src_port<<endl;
+		}
+	}
