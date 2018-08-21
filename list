@@ -76,6 +76,10 @@ struct cont
 {
 	return (c.age<10);
 } 
+bool same_unique(const cont &ma1,const cont &ma2)
+{
+	return (ma1.age==ma2.age);
+}
 int main()  
 {
 
@@ -107,6 +111,7 @@ list<cont>::iterator it = content.begin();//迭代器
 	}
 	
 	content.unique();
+	//content.unique(same_unique);
 	
 	list<cont>::reverse_iterator rit = content.rbegin();//反向迭代器
 	for(rit;rit != content.rend();rit++)
