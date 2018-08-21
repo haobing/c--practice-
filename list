@@ -49,73 +49,101 @@ Lst1.splice() 合并两个list
 Lst1.swap() 交换两个list 
 Lst1.unique() 删除list中重复的元素
 
-#include <list>  
-#include <set>  
-#include <iostream>  
-#include <algorithm>  
-#include <vector>  
-#include <tchar.h>   
-  
-using namespace std;  
+#include<list>
+#include<set>
+#include<iostream>
+using namespace std;
 
 struct cont
 {
 	int age;
 	int sextype;
 	char name[20];
-	bool operator<(const cont &man) const
+	
+	bool operator<(const cont& man) const
 	{
-		return age<man.age;
+		if(age<man.age)
+		{
+			return true;
+		}else if(age==man.age)
+		{
+			if(sextype<man.sextype)
+			{
+				return true;
+			}
+		}
+		return false;
 	}
-	bool operator==(const cont &ma) const
+	
+	bool operator==(const cont& man) const
 	{
-		return sextype==ma.sextype;
+		return sextype==man.sextype;
 	}
 };
- bool sigle_digit(const cont &c)
+
+bool sigle_digit(const cont &c)
 {
-	return (c.age<10);
-} 
+	return c.age<10;
+}
 bool same_unique(const cont &ma1,const cont &ma2)
 {
 	return (ma1.age==ma2.age);
 }
-int main()  
+
+int main()
 {
-
-
-list<cont> content;
-
-cont co1  = {10,1,"liming"};
-cont con2 = {8,2,"lihong"};
-cont con3 = {11,1,"fd"};
-cont con4 = {11,1,"hao"};
-
-content.push_back(co1);
-content.push_back(con2);
-content.push_back(con2);
-content.insert(content.begin(), con2);//在content.begin()之前插入con4;
-//content.erase(content.begin());//删除content.begin()所在位置的元素
-cout<<content.size()<<content.back().age<<endl;//打印List大小和最后一个元素中的age
-
-//content.sort();//排序，结构体中要重载小于号<
-
-//content.remove_if(sigle_digit);//删除不符合要求的数据
-
-content.assign(content.begin(),content.end());//插入从content.begin()到content.end()的元素
-
-list<cont>::iterator it = content.begin();//迭代器
-	for(it; it != content.end(); it++)
-	{
-		cout<<"the"<<it->age<<endl;
-	}
+	cont con1 = {4,1,"liming"};
+	cont con2 = {3,2,"lihong"};
+	cont con3 = {3,3,"fd"};
+	cont con4 = {11,4,"fds"};
 	
-	content.unique();
+	list<cont> content,content1;
+	
+	content.push_back(con1);
+	content.push_back(con2);
+	content.push_back(con3);
+	content.push_back(con3);
+	content.push_back(con3);
+	content.push_back(con3);
+	content.insert(content.begin(),con4);
+	
+	if(content.empty() == false)
+	{
+		cout<<content.size()<<" "<<content.back().age<<" "<<content.begin()->age<<endl;
+  }
+  
+	list<cont>::iterator it=content.begin();
+		
+	for(;it!=content.end();it++)
+	{
+		cout<<"age "<<it->age<<" sextype "<<it->sextype<<endl;
+	}
+	content1.assign(content.begin(),content.end());
+	
+	content1.sort();//Lst1.sort() 给list排序 ，***注意需要重载小于<号
+	
+	content1.erase(content1.begin());//Lst1.erase() 删除一个元素
+	
+	content1.remove(con2);//Lst1.remove() 从list删除元素
+	
+	//content1.remove_if(sigle_digit);//Lst1.remove_if()按指定条件删除元素 
+	
+	content1.reverse();//Lst1.reverse() 把list的元素倒转 
+	
+	//content1.unique();//Lst1.unique() 删除list中重复的元素,***注意需要重载==号
+	
 	//content.unique(same_unique);
 	
-	list<cont>::reverse_iterator rit = content.rbegin();//反向迭代器
-	for(rit;rit != content.rend();rit++)
+	for(it=content1.begin();it!=content1.end();it++)
 	{
-		cout<<"the reverse iteratro"<<rit->age<<endl;
+		cout<<"age1 "<<it->age<<" sextype "<<it->sextype<<endl;
 	}
 }
+	
+		
+
+		
+	
+		
+
+		
