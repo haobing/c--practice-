@@ -23,3 +23,57 @@ map的基本操作函数：
       swap()            交换两个map
       upper_bound()     返回键值>给定元素的第一个位置
       value_comp()      返回比较元素value的函数
+#include<map>
+#include<string>
+#include<iostream>
+using namespace std;
+
+
+int main()
+{
+	map<int, string> mapstudent;
+	
+	mapstudent.insert(pair<int,string>(1,"student_one"));
+	
+	mapstudent.insert(map<int,string>::value_type(2,"student_two"));
+	mapstudent[3]="student_three";
+	mapstudent.insert(map<int,string>::value_type(4,"student_four"));
+	
+	pair<map<int,string>::iterator,bool> insertpair;
+	
+	insertpair = mapstudent.insert(map<int,string>::value_type(5,"student_five"));
+	
+	if(insertpair.second == true)
+	{
+		cout<<"successful"<<endl;
+	}
+	
+	map<int,string>::iterator iter;
+	for(iter = mapstudent.begin(); iter != mapstudent.end();iter++)
+	{
+		cout<<iter->first<<" "<<iter->second<<endl;
+	}
+	
+	for(int index=0;index<mapstudent.size();index++)
+	{
+		cout<<mapstudent[index]<<endl;
+	}
+	
+	cout<<mapstudent.count(1)<<endl;//返回指定元素出现的次数
+	
+	iter = mapstudent.find(1);//查找一个元素
+	
+	if(iter!=mapstudent.end())
+	{
+		cout<<"shuju cunzai"<<iter->first<<" "<<iter->second<<endl;
+	}
+	
+	int n=mapstudent.erase(3);
+	
+	iter = mapstudent.lower_bound(4);   // 返回键值>=给定元素的第一个位置 
+    cout<<iter->second<<endl;  
+    iter = mapstudent.upper_bound(4);   //返回键值>给定元素的第一个位置   
+    cout<<iter->second<<endl;      
+    
+    mapstudent.erase(mapstudent.begin(),mapstudent.end());
+	}
