@@ -11,6 +11,19 @@ STL容器：
 3、元素类型必须支持一个缺省值（对于类类型，即指缺省构造函数）；
 
 例子：
+struct people{
+	int age;
+	int sextype;
+	char name[20];
+	bool operator<(const cont &man) const
+	{
+		return age<man.age;
+	}
+	bool operator==(const cont &ma) const
+	{
+		return sextype==ma.sextype;
+	}
+};
 
 如果要把静态成员数据设为私有，该如何访问？
 通过公有静态成员函数访问。
