@@ -1,6 +1,14 @@
 # c-practice
 练习C++
-
+只有用static修饰的成员函数才可以不用申明对象，直接用类：：函数的形式访问
+例子：
+class tim{
+static void pri(void)
+{
+cout<<"fsdadfd"<<endl;
+}
+};
+可以直接调用tim::pri函数运行。
 STL容器：
 我们能够定义的容器的类型有三个限制：
 
