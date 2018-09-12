@@ -59,6 +59,7 @@ int main()
 	for(a;a<ve.end();a++)
 	{
 		cout<<"ve("<<i<<")"<<"="<<*a<<endl;
+		a=ve.erase(a)//vector::erase释放之后，a变为野指针
 		
 	}
 	
