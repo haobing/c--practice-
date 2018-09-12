@@ -49,9 +49,10 @@ int main()
 	}
 	
 	map<int,string>::iterator iter;
-	for(iter = mapstudent.begin(); iter != mapstudent.end();iter++)
+	for(iter = mapstudent.begin(); iter != mapstudent.end();)
 	{
 		cout<<iter->first<<" "<<iter->second<<endl;
+		mapstudent.erase(iter++);//map的erase删除是这样用的
 	}
 	
 	for(int index=0;index<mapstudent.size();index++)
