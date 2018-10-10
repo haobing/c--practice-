@@ -1,0 +1,58 @@
+静态成员变量要在类外初始化，并可以作为全局变量来使用；静态成员函数中只能调用静态成员变量，且静态成员函数可以单独使用；
+#include<stdio.h>
+#include<iostream>
+using namespace std;
+
+class student{
+    public:
+        student();
+        ~student();
+        static int get_score(void);
+        void set_score(void);
+
+    
+        static int g_score;
+        
+};
+
+int student::g_score = 10;
+
+student::student()
+{
+
+}
+
+student::~student()
+{
+
+}
+
+void student::set_score(void)
+{
+    g_score = 100;
+}
+
+int student::get_score(void)
+{   
+   
+    return g_score;
+}
+
+int main()
+{
+    student *li = new student;
+   li->set_score();
+   {
+    int i=student::g_score;
+    int j=student::get_score();
+    printf("the i=%d, j=%d\n",i,j);
+    }
+
+   student::g_score = 1000;
+   
+    {
+    int i=student::g_score;
+    int j=student::get_score();
+    printf("the i=%d, j=%d\n",i,j);
+    }
+}
