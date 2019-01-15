@@ -1,4 +1,5 @@
 # c-practice
+编译的时候加上-std=-std=gnu++0x.例：g++ -std=gnu++0x -o he he.cpp
 练习C++
 只有用static修饰的成员函数才可以不用申明对象，直接用类：：函数的形式访问
 例子：
