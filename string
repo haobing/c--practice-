@@ -5,7 +5,7 @@ using namespace std;
 int main()
 {
   string str("myname=hello world");
- auto ipos = str.find("=");
+ auto ipos = str.find("=",0);
 auto s1=str.substr(0,ipos);
 auto s2=str.substr(ipos+1);
 string s3(str,1,4);
