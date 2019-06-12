@@ -1,1 +1,243 @@
 
+//简单工厂模式,不符合开闭原则，不是23种标准设计模式
+#include<iostream>
+#include<string.h>
+#include<stdlib.h>
+using namespace std;
+
+class Fruit
+{
+public:
+	Fruit(){}
+	virtual ~Fruit(){}
+	virtual void sayName() = 0;
+};
+
+class Banana:public Fruit
+{
+public:
+	virtual void sayName()
+	{
+		cout<<"Banana"<<endl;
+	}
+};
+
+class Apple:public Fruit
+{
+public:
+	virtual void sayName()
+	{
+		cout<<"Apple"<<endl;
+	}
+};
+
+class Factory
+{
+public:
+	Fruit *create(char *p)
+	{
+		if(strcmp(p,"banana") == 0)
+		{
+			return new Banana;
+		}
+		else if(strcmp(p,"apple") == 0)
+		{
+			return new Apple;
+		}
+		else
+		{
+			return NULL;
+		}
+	}
+};
+
+int main()
+{
+	Factory *fac = new Factory;
+	Fruit *banana = fac->create("banana");
+	banana->sayName();
+	Fruit *apple = fac->create("apple");
+	apple->sayName();
+	delete apple;
+	delete banana;
+	delete fac;
+}
+
+
+
+//1,工厂方法模式————————————————————————————————————————————————————
+#include<iostream>
+#include<stdlib.h>
+#include<string.h>
+using namespace std;
+
+class Fruit
+{
+public:
+	virtual ~Fruit(){}
+	virtual void sayName() = 0;
+};
+
+class Banana :public Fruit
+{
+public:
+	virtual void sayName()
+	{
+		cout << " im is banana" << endl;
+	}
+};
+
+class Apple :public Fruit
+{
+public:
+	virtual void sayName()
+	{
+		cout << "im is apple" << endl;
+	}
+};
+
+class Factory
+{
+public:
+	virtual ~Factory(){}
+	virtual Fruit *create() = 0;
+};
+
+class BananaFactory :public Factory
+{
+	virtual Fruit* create()
+	{
+		return new Banana;
+	}
+};
+
+class AppleFactory :public Factory
+{
+	virtual Fruit* create()
+	{
+		return new Apple;
+	}
+};
+
+int main()
+{
+	Factory* fac = new BananaFactory;
+	Fruit* fruit = fac->create();
+	fruit->sayName();
+	delete fac;
+	delete fruit;
+
+	fac = new AppleFactory;
+	fruit = fac->create();
+	fruit->sayName();
+	delete fruit;
+	delete fac;
+	return 0;
+}
+	
+
+//抽象工厂模式————————————————————————————————————————————————————————————————————————————————————
+#include<iostream>
+using namespace std;
+class Fruit
+{
+public:
+	virtual ~Fruit(){}
+	virtual void sayName() = 0;
+};
+
+class LocalApple :public Fruit
+{
+public:
+	virtual void sayName()
+	{
+		cout << "im is LocalApple" << endl;
+	}
+};
+
+class LocalBanana :public Fruit
+{
+public:
+	virtual void sayName()
+	{
+		cout << "im is LocalBanana" << endl;
+	}
+};
+
+
+class ImportApple :public Fruit
+{
+public:
+	virtual void sayName()
+	{
+		cout << "im is ImportApple" << endl;
+	}
+};
+
+class ImportBanana :public Fruit
+{
+public:
+	virtual void sayName()
+	{
+		cout << "im is ImportBanana" << endl;
+	}
+};
+
+class Factory
+{
+public:
+	virtual ~Factory(){}
+	virtual Fruit* createApple() = 0;
+	virtual Fruit* createBanana() = 0;
+};
+
+class LocalFactory :public Factory
+{
+public:
+	virtual Fruit* createApple()
+	{
+		return new LocalApple;
+	}
+
+	virtual Fruit* createBanana()
+	{
+		return new LocalBanana;
+	}
+};
+
+class ImportFactory :public Factory
+{
+public:
+	virtual Fruit* createApple()
+	{
+		return new ImportApple;
+	}
+
+	virtual Fruit* createBanana()
+	{
+		return new ImportBanana;
+	}
+};
+
+int main()
+{
+	Fruit* apple = nullptr;
+	Fruit* banana = nullptr;
+	Factory* fac = nullptr;
+
+	fac = new LocalFactory;
+	apple = fac->createApple();
+	banana = fac->createBanana();
+	apple->sayName();
+	banana->sayName();
+	
+	delete apple;
+	delete banana;
+	delete fac;
+	
+	fac = new ImportFactory;
+	apple = fac->createApple();
+	banana = fac->createBanana();
+	apple->sayName();
+	banana->sayName();
+}
