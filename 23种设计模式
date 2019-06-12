@@ -135,4 +135,108 @@ int main()
 }
 	
 
+//抽象工厂模式————————————————————————————————————————————————————————————————————————————————————
+#include<iostream>
+using namespace std;
+class Fruit
+{
+public:
+	virtual ~Fruit(){}
+	virtual void sayName() = 0;
+};
 
+class LocalApple :public Fruit
+{
+public:
+	virtual void sayName()
+	{
+		cout << "im is LocalApple" << endl;
+	}
+};
+
+class LocalBanana :public Fruit
+{
+public:
+	virtual void sayName()
+	{
+		cout << "im is LocalBanana" << endl;
+	}
+};
+
+
+class ImportApple :public Fruit
+{
+public:
+	virtual void sayName()
+	{
+		cout << "im is ImportApple" << endl;
+	}
+};
+
+class ImportBanana :public Fruit
+{
+public:
+	virtual void sayName()
+	{
+		cout << "im is ImportBanana" << endl;
+	}
+};
+
+class Factory
+{
+public:
+	virtual ~Factory(){}
+	virtual Fruit* createApple() = 0;
+	virtual Fruit* createBanana() = 0;
+};
+
+class LocalFactory :public Factory
+{
+public:
+	virtual Fruit* createApple()
+	{
+		return new LocalApple;
+	}
+
+	virtual Fruit* createBanana()
+	{
+		return new LocalBanana;
+	}
+};
+
+class ImportFactory :public Factory
+{
+public:
+	virtual Fruit* createApple()
+	{
+		return new ImportApple;
+	}
+
+	virtual Fruit* createBanana()
+	{
+		return new ImportBanana;
+	}
+};
+
+int main()
+{
+	Fruit* apple = nullptr;
+	Fruit* banana = nullptr;
+	Factory* fac = nullptr;
+
+	fac = new LocalFactory;
+	apple = fac->createApple();
+	banana = fac->createBanana();
+	apple->sayName();
+	banana->sayName();
+	
+	delete apple;
+	delete banana;
+	delete fac;
+	
+	fac = new ImportFactory;
+	apple = fac->createApple();
+	banana = fac->createBanana();
+	apple->sayName();
+	banana->sayName();
+}
