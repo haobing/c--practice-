@@ -64,4 +64,75 @@ int main()
 
 
 
+//1,工厂方法模式————————————————————————————————————————————————————
+#include<iostream>
+#include<stdlib.h>
+#include<string.h>
+using namespace std;
+
+class Fruit
+{
+public:
+	virtual ~Fruit(){}
+	virtual void sayName() = 0;
+};
+
+class Banana :public Fruit
+{
+public:
+	virtual void sayName()
+	{
+		cout << " im is banana" << endl;
+	}
+};
+
+class Apple :public Fruit
+{
+public:
+	virtual void sayName()
+	{
+		cout << "im is apple" << endl;
+	}
+};
+
+class Factory
+{
+public:
+	virtual ~Factory(){}
+	virtual Fruit *create() = 0;
+};
+
+class BananaFactory :public Factory
+{
+	virtual Fruit* create()
+	{
+		return new Banana;
+	}
+};
+
+class AppleFactory :public Factory
+{
+	virtual Fruit* create()
+	{
+		return new Apple;
+	}
+};
+
+int main()
+{
+	Factory* fac = new BananaFactory;
+	Fruit* fruit = fac->create();
+	fruit->sayName();
+	delete fac;
+	delete fruit;
+
+	fac = new AppleFactory;
+	fruit = fac->create();
+	fruit->sayName();
+	delete fruit;
+	delete fac;
+	return 0;
+}
+	
+
 
