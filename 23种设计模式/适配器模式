@@ -1,0 +1,44 @@
+适配器模式目的为了向客户提供他们所需要的接口，在适配器内部再调用我们自己已经实现的接口。
+#include<iostream>
+using namespace std;
+class Cur18v
+{
+public:
+	virtual void useCur18v() = 0;
+};
+
+class Cur220v
+{
+public:
+	virtual void useCur220v()
+	{
+		cout << "220v" << endl;
+	}
+};
+
+class Adapter :public Cur18v
+{
+public:
+	Adapter(Cur220v* cur)
+	{
+		this->cur = cur;
+	}
+	virtual void useCur18v()
+	{
+		cur->useCur220v();
+		cout << "couvert to 18v" << endl;
+	}
+private:
+	Cur220v* cur;
+};
+
+int main()
+{
+	Cur220v* cur220v = new Cur220v;
+	Adapter* adapter = new Adapter(cur220v);
+	adapter->useCur18v();
+	delete cur220v;
+	delete adapter;
+	return 0;
+}
+
