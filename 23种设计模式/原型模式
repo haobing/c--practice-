@@ -1,0 +1,71 @@
+原型模式就是让对象拥有自我拷贝的功能，方便备份对象数据或者创建对象时设置过多的参数。
+
+#include<iostream>
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+using namespace std;
+
+class Programmer
+{
+public:
+	virtual ~Programmer(){}
+	virtual Programmer* clone() = 0;
+	virtual void print() = 0;
+};
+
+class CProgrammer :public Programmer
+{
+public:
+	CProgrammer()
+	{
+		m_name = "";
+		m_age = 0;
+		m_des = NULL;
+	}
+	CProgrammer(string name, int age, char* des)
+	{
+		m_name = name;
+		m_age = age;
+		m_des = new char[strlen(des) + 1];
+		strcpy(m_des, des);
+	}
+	~CProgrammer()
+	{
+		if (m_des != NULL)
+		{
+			delete[] m_des;
+			m_des = NULL;
+		}
+	}
+	virtual Programmer* clone()
+	{
+		CProgrammer* tmp = new CProgrammer;
+		tmp->m_name = this->m_name;
+		tmp->m_age = this->m_age;
+		tmp->m_des = new char[strlen(m_des) + 1];
+		strcpy(tmp->m_des, this->m_des);
+		return tmp;
+	}
+	virtual void print()
+	{
+		cout << m_name << endl;
+		cout << m_age << endl;
+		cout << m_des << endl;
+	}
+private:
+	string m_name;
+	int m_age;
+	char* m_des;
+
+};
+
+int main()
+{
+	Programmer* pro = new CProgrammer("jun", 26, "C PROGRAMMER");
+	Programmer* p2 = pro->clone();
+	p2->print();
+	delete p2;
+	delete pro;
+	return 0;
+}
