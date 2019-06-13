@@ -1,0 +1,132 @@
+//为不同继承层次和组合层次的类，提供统一的接口。
+#include<iostream>
+#include<list>
+using namespace std;
+class IFile
+{
+public:
+	virtual ~IFile(){}
+	virtual void display() = 0;
+	virtual int add(IFile* iFile) = 0;
+	virtual int remove(IFile* iFile) = 0;
+	virtual list<IFile*>* getChild() = 0;
+};
+
+class File :public IFile
+{
+public:
+	File(string name)
+	{
+		m_name = name;
+	}
+	virtual void display()
+	{
+		cout << m_name << endl;
+	}
+	virtual int add(IFile* iFile)
+	{
+		return -1;
+	}
+	virtual int remove(IFile* iFile)
+	{
+		return -1;
+	}
+	virtual list<IFile*>* getChild()
+	{
+		return NULL;
+	}
+private:
+	string m_name;
+};
+
+class Folder :public IFile
+{
+public:
+	Folder(string name)
+	{
+		m_name = name;
+		m_list = new list<IFile*>;
+		m_list->clear();
+	}
+	virtual ~Folder()
+	{
+		if (m_list != NULL)
+		{
+			delete m_list;
+			m_list = NULL;
+		}
+	}
+	virtual void display()
+	{
+		cout << m_name << ":" << endl;
+	}
+	virtual int add(IFile* iFile)
+	{
+		m_list->push_back(iFile);
+		return 0;
+	}
+	virtual int remove(IFile* iFile)
+	{
+		m_list->remove(iFile);
+		return 0;
+	}
+	virtual list<IFile*>* getChild()
+	{
+		return m_list;
+	}
+private:
+	string m_name;
+	list<IFile*>* m_list;
+};
+void showTree(IFile* root, int level)
+{
+	if (root == NULL)
+	{
+		return;
+	}
+	for (int i = 0; i < level; i++)
+	{
+		cout << "\t";
+	}
+	root->display();
+	list<IFile*> *mylist = root->getChild();
+	if (mylist == NULL)
+	{
+		return;
+	}
+	else
+	{
+		for (list<IFile*>::iterator it = mylist->begin(); it != mylist->end(); ++it)
+		{
+			if ((*it)->getChild() == NULL)
+			{
+				for (int i = 0; i < level + 1; i++)
+				{
+					cout << "\t";
+				}
+				(*it)->display();
+			}
+			else
+			{
+				showTree(*it, level + 1);
+			}
+		}
+	}
+}
+
+int main()
+{
+	Folder* root = new Folder("C");
+	File* file1 = new File("file1.txt");
+	root->add(file1);
+
+	Folder* folder = new Folder("folder1");
+	File* file2 = new File("file2.text");
+	folder->add(file2);
+	root->add(folder);
+	showTree(root, 0);
+	delete file1;
+	delete file2;
+	delete folder;
+	return 0;
+}
