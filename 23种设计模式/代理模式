@@ -1,0 +1,56 @@
+代理的目的是一般是为了防止直接访问某一个类，提供一种类似授权的机制。
+
+最典型的类中set和get方法实际上就是一种代理。
+
+#include<iostream>
+using namespace std;
+class Shop
+{
+public:
+	virtual ~Shop(){}
+	virtual void sell() = 0;
+};
+
+class BookShop :public Shop
+{
+	virtual void sell()
+	{
+		cout << "sell book" << endl;
+	}
+};
+
+class NetShop :public Shop
+{
+public:
+	NetShop()
+	{
+		m_shop = new BookShop;
+	}
+	virtual ~NetShop()
+	{
+		if (m_shop != NULL)
+		{
+			delete m_shop;
+			m_shop = NULL;
+		}
+	}
+	virtual void sell()
+	{
+		discount();
+		m_shop->sell();
+	}
+	void discount()
+	{
+		cout << "discount" << endl;
+	}
+private:
+	Shop* m_shop;
+};
+
+int main()
+{
+	NetShop* netshop = new NetShop;
+	netshop->sell();
+	delete netshop;
+	return 0;
+}
