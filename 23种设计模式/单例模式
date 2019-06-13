@@ -1,0 +1,63 @@
+单例模式就是让一个类智能创建一个对象。
+
+单例模式分为两种：懒汉式和饿汉式
+
+// 懒汉式——————————————————————————————————————————————————————————————————————————————————
+class Singleton {
+	private:
+		Singleton() {
+			cout << "Singleton()" << endl;
+		}
+ 
+	public:
+		~Singleton() {
+			cout << "~Singleton()" << endl;
+		}
+		
+		static Singleton* getInstance() {
+			if (m_instance == NULL) {
+				m_instance = new Singleton;
+			}	
+			return m_instance;
+		}
+ 
+		static void freeInstance() {
+			if (m_instance != NULL) {
+				delete m_instance;
+				m_instance = NULL;
+			}	
+		}
+ 
+private:
+		static Singleton* m_instance;
+};
+
+//饿汉式————————————————————————————————————————————————————————————————————————————
+class Singleton {
+	private:
+		Singleton() {
+			cout << "Singleton()" << endl;
+		}
+ 
+	public:
+		~Singleton() {
+			cout << "~Singleton()" << endl;
+		}
+		
+	public:
+		static Singleton* getInstance() {
+			return m_instance;
+		}
+ 
+		static void freeInstance() {
+			if (m_instance != NULL) {
+				delete m_instance;
+				m_instance = NULL;
+			}	
+		}
+ 
+	private:
+		static Singleton* m_instance;
+};
+ 
+Singleton* Singleton::m_instance = new Singleton;
