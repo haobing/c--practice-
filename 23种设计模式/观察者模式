@@ -1,0 +1,54 @@
+#include<iostream>
+#include<list>
+#include<map>
+using namespace std;
+class Secretary;
+class PlayerObserver
+{
+public:
+	PlayerObserver(Secretary* secretary)
+	{
+		this->secretary = secretary;
+	}
+	void update(string action)
+	{
+		cout << "action" << action << endl;
+	}
+private:
+	Secretary* secretary;
+};
+
+class Secretary
+{
+public:
+	void notify(string info)
+	{
+		for (list<PlayerObserver*>::iterator it = playerList.begin(); it != playerList.end(); it++)
+		{
+			(*it)->update(info);
+		}
+	}
+
+	void setPlayerObserver(PlayerObserver* player)
+	{
+		playerList.push_back(player);
+	}
+private:
+	list<PlayerObserver*> playerList;
+
+};
+
+int main()
+{
+	Secretary* sec = new Secretary();
+	PlayerObserver* player1 = new PlayerObserver(sec);
+	PlayerObserver* player2 = new PlayerObserver(sec);
+	sec->setPlayerObserver(player1);
+	sec->setPlayerObserver(player2);
+	sec->notify("im coming");
+	sec->notify("im leaving");
+
+	delete player1;
+	delete player2;
+	delete sec;
+}
