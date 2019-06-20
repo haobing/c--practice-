@@ -1,54 +1,74 @@
 #include<iostream>
 #include<list>
 #include<map>
+#include<vector>
 using namespace std;
 class Secretary;
-class PlayerObserver
+class StockObserver
 {
 public:
-	PlayerObserver(Secretary* secretary)
+	StockObserver(string name, Secretary* sub)
 	{
-		this->secretary = secretary;
+		this->name = name;
+		this->ssub = sub;
 	}
-	void update(string action)
-	{
-		cout << "action" << action << endl;
-	}
+	void update();
 private:
-	Secretary* secretary;
+	string name;
+	Secretary* ssub;
 };
+
 
 class Secretary
 {
 public:
-	void notify(string info)
+	
+	string action;
+	void add(StockObserver ob)
 	{
-		for (list<PlayerObserver*>::iterator it = playerList.begin(); it != playerList.end(); it++)
+		observers.push_back(ob);
+	}
+	void remove(int addIndex)
+	{
+		if (addIndex >= 0 && addIndex < observers.size())
 		{
-			(*it)->update(info);
+			observers.erase(observers.begin() + addIndex);
 		}
 	}
 
-	void setPlayerObserver(PlayerObserver* player)
+	void notify()
 	{
-		playerList.push_back(player);
+		vector<StockObserver>::iterator it;
+		for (it = observers.begin(); it != observers.end(); it++)
+		{
+			it->update();
+		}
 	}
 private:
-	list<PlayerObserver*> playerList;
-
+	vector<StockObserver> observers;
 };
+
+void StockObserver::update()
+{
+	cout << name << ":" << ssub->action << ",begin to work" << endl;
+}
 
 int main()
 {
-	Secretary* sec = new Secretary();
-	PlayerObserver* player1 = new PlayerObserver(sec);
-	PlayerObserver* player2 = new PlayerObserver(sec);
-	sec->setPlayerObserver(player1);
-	sec->setPlayerObserver(player2);
-	sec->notify("im coming");
-	sec->notify("im leaving");
+	Secretary* p = new Secretary();
+	StockObserver* s1 = new StockObserver("hao",p);
+	StockObserver* s2 = new StockObserver("li",p);
+	p->add(*s1);
+	p->add(*s2);
+	p->action = "the boss is coming";
+	p->notify();
+	p->remove(0);
+	p->notify();
+	delete p;
+	delete s1;
+	delete s2;
 
-	delete player1;
-	delete player2;
-	delete sec;
 }
+
+
+   
