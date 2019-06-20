@@ -1,0 +1,82 @@
+#include<iostream>
+#include<list>
+#include<map>
+#include<vector>
+using namespace std;
+class CarHandle
+{
+public:
+	CarHandle()
+	{
+		m_handle = NULL;
+	}
+	virtual ~CarHandle() {}
+	virtual void handleRequest() = 0;
+	virtual CarHandle* setNextHandle(CarHandle* handle)
+	{
+		m_handle = handle;
+		return m_handle;
+	}
+protected:
+	CarHandle* m_handle;
+};
+
+class EngineCarHandle :public CarHandle
+{
+public:
+	virtual void handleRequest()
+	{
+		cout << "engine" << endl;
+		if(m_handle != NULL)
+		{
+			m_handle->handleRequest();
+		}
+	}
+};
+
+class BodyCarHandle :public CarHandle
+{
+public:
+	virtual void handleRequest()
+	{
+		cout << "body" << endl;
+		if (m_handle != NULL)
+		{
+			m_handle->handleRequest();
+		}
+	}
+};
+
+class TireCarHandle :public CarHandle
+{
+public :
+	virtual void handleRequest()
+	{
+		cout << "tire" << endl;
+		if (m_handle != NULL)
+		{
+			m_handle->handleRequest();
+		}
+	}
+};
+
+int main()
+{
+	CarHandle* engine = new EngineCarHandle();
+	CarHandle* body = new BodyCarHandle();
+	CarHandle* tire = new TireCarHandle();
+
+	engine->handleRequest();
+	body->handleRequest();
+	tire->handleRequest();
+
+	cout << endl;
+	engine->setNextHandle(body);
+	body->setNextHandle(tire);
+	tire->setNextHandle(NULL);
+	engine->handleRequest();
+
+	delete tire;
+	delete body;
+	delete engine;
+}
