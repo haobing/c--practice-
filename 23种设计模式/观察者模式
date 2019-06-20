@@ -48,6 +48,7 @@ private:
 	vector<StockObserver> observers;
 };
 
+//注意这个函数的定义要用到Secretary：：action,所以必须放在Secretary类定义的后面
 void StockObserver::update()
 {
 	cout << name << ":" << ssub->action << ",begin to work" << endl;
