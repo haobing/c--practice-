@@ -1,0 +1,12 @@
+c++11新特性：
+1、lambda表达式格式为：[capture](parameters)->return-type {body}；在一个函数调用的参数列表中出现[ ]意味着开始一个lambda表达式
+例：    int main()
+    {
+        char s[] = "Hello World!";
+        int Uppercase = 0; // lambda对其进行修改
+        for_each(s, s+sizeof(s), [&Uppercase] (char c) {
+            if (isupper(c))
+            Uppercase++;
+        });
+        cout << Uppercase << " uppercase letters in: " << s << endl;
+    }
