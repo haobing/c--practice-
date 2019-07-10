@@ -10,3 +10,5 @@ c++11新特性：
         });
         cout << Uppercase << " uppercase letters in: " << s << endl;
     }
+    
+2、自动类型推断auto和decltype：C++11 新标准中引入了四个头文件来支持多线程编程，他们分别是<atomic> ,<thread>,<mutex>,<condition_variable>和<future>。
