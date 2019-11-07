@@ -1,0 +1,23 @@
+1、for_each(容器起始地址，容器结束地址，要执行的方法);
+例子：
+int ff(int x)
+{
+	cout<<"in the ff x="<<x<<endl;
+	return 0;
+}
+int main()
+{
+	int a[10]={1,2,3,4,5,6,7,8,9,10};
+	vector<int> ve(a,a+10);
+	plusss aaa;
+	aaa(10);
+	for_each(ve.begin(),ve.end(),[](int x){cout<<"the x="<<x<<endl;});
+	for_each(ve.begin(),ve.end(),ff);
+}
+
+2、find
+例子：
+int a[10]={1,2,3,4,5,6,7,8,9,10};
+	int *p=find(a,a+10,4);
+	cout<<"the p="<<*p<<endl;
+ 3、copy
