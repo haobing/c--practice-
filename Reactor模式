@@ -1,0 +1,382 @@
+#pragma once
+#ifndef EVENT_HANDLER_H
+#define EVENT_HANDLER_H
+
+class EventHandler
+{
+public:
+	virtual void HandleRead() = 0;
+	virtual void HandleWrite() = 0;
+	virtual void HandleError() = 0;
+	int getFd()
+	{
+		return m_fd;
+	}
+	enum Event
+	{
+		kReadEvent = 0,
+		kWriteEvent=1,
+		kErorrEvent=2,
+		kMaskEvent=3
+
+	};
+protected:
+	int m_fd;
+};
+
+#endif
+
+#pragma once
+#ifndef EPOLL_DEMUX_TIPLEXER_H
+#define EPOLL_DEMUX_TIPLEXER_H
+#include "EventHandler.h"
+#include <sys/epoll.h>
+#include <unistd.h>
+class EventDemultiplexer
+{
+public:
+	virtual int WaitEvents(int timeout=-1) = 0;
+	virtual int AddEvents(EventHandler* hand, EventHandler::Event ev) = 0;
+	virtual int Remove(EventHandler* hand) = 0;
+};
+
+
+
+class EpollDemultiplexer :public EventDemultiplexer
+{
+private:
+	int m_epollfd;
+public:
+	EpollDemultiplexer()
+	{
+		m_epollfd = epoll_create(1000);
+	}
+	int WaitEvents(int timeout = -1) final;
+	int AddEvents(EventHandler* hand, EventHandler::Event ev) override;
+	int Remove(EventHandler* hand) final;
+};
+
+#endif
+
+
+#include"EpollDemultiplexer.h"
+#include<stdio.h>
+#include <error.h>
+#include <cerrno>
+#include<iostream>
+using namespace std;
+int EpollDemultiplexer::WaitEvents(int timeout)
+{
+	struct epoll_event ev[1000];
+	int num = 0;
+	cout << "before epoll_wait epoffd=" << m_epollfd << endl;
+	num = epoll_wait(m_epollfd, ev, sizeof(ev), timeout);
+	if (num == 0)
+	{
+		cout << "after the epoll_wait" << endl;
+	}
+	cout << "the num=" << num << endl;
+	if (num < 0)
+	{
+		perror("epoll_wait");
+	}
+	for (int i = 0; i < num; i++)
+	{
+		EventHandler* hand = (EventHandler*)ev[i].data.ptr;
+		cout << "the ev[i].events=" << ev[i].events << endl;
+		//cout << "the ev[i].data.fd=" << ev[i].data.fd << endl;
+		if (ev[i].events == EPOLLERR || ev[i].events == EPOLLHUP)
+		{
+			hand->HandleError();
+		}
+		else if (ev[i].events == EPOLLIN)
+		{
+			cout << "the hand->handread" << endl;
+			hand->HandleRead();
+		}
+		else if (ev[i].events == EPOLLOUT)
+		{
+			hand->HandleWrite();
+		}
+	}
+	return num;
+}
+
+int EpollDemultiplexer::AddEvents(EventHandler* hand, EventHandler::Event ev)
+{
+	struct epoll_event epollev;
+	epollev.data.ptr = hand;
+	//epollev.data.fd = hand->getFd();
+	if (ev == EventHandler::kReadEvent)
+	{
+		epollev.events = EPOLLIN;
+	}
+	else if (ev == EventHandler::kWriteEvent)
+	{
+		epollev.events = EPOLLOUT;
+	}
+	else
+	{
+		epollev.events = EPOLLERR;
+	}
+	int ret = 0;
+	cout << "in the AddEvent m_epollfd=" << m_epollfd <<"hand->getFd()="<< hand->getFd()<< endl;
+	ret = epoll_ctl(m_epollfd, EPOLL_CTL_MOD, hand->getFd(), &epollev);
+	cout << "ret=" << ret << endl;
+	if (ret != 0)
+	{
+		if (errno == ENOENT)
+		{
+			ret = epoll_ctl(m_epollfd, EPOLL_CTL_ADD, hand->getFd(), &epollev);
+			cout << "ret=" << ret << endl;
+			if (ret != 0)
+			{
+				return -1;
+			}
+		}
+		else
+		{
+			return -1;
+		}
+	}
+	return 1;
+}
+
+int EpollDemultiplexer::Remove(EventHandler* hand)
+{
+	struct epoll_event ev;
+	int ret = epoll_ctl(m_epollfd, EPOLL_CTL_DEL, hand->getFd(), &ev);
+	return ret;
+}
+
+
+#pragma once
+#ifndef REACTOR_H
+#define REACTOR_H
+
+#include"EpollDemultiplexer.h"
+#include<iostream>
+using namespace std;
+
+class Reactor
+{
+private:
+	EventDemultiplexer* m_epd;
+	static Reactor* reac;
+	const static int i = 10;
+public:
+	Reactor();
+	int RegisterHand(EventHandler* hand, EventHandler::Event ev);
+	int RemoveHand(EventHandler* hand);
+	int HandEvent();
+	void loop()
+	{
+		while (1)
+		{
+			cout << "in the while" << endl;
+			if (reac->HandEvent()< 0)
+			{
+				continue;
+			}
+
+		}
+	}
+	static Reactor* getReactor();
+};
+
+#endif
+
+
+#include"Reactor.h"
+#include<stdio.h>
+
+Reactor *Reactor::reac = NULL;
+Reactor::Reactor()
+{
+	m_epd=new EpollDemultiplexer();
+}
+
+int Reactor::RegisterHand(EventHandler* hand, EventHandler::Event ev)
+{
+	int ret = m_epd->AddEvents(hand, ev);
+	if (ret <= 0)
+		printf("AddEvents error\n");
+	return ret;
+}
+
+int Reactor::RemoveHand(EventHandler* hand)
+{
+	return m_epd->Remove(hand);
+}
+
+int Reactor::HandEvent()
+{
+	return m_epd->WaitEvents();
+}
+
+Reactor* Reactor::getReactor()
+{
+	if (reac == NULL)
+	{
+		reac = new Reactor();
+	}
+
+	return reac;
+}
+
+
+#include <cstdio>
+#include<pthread.h>
+#include<stdio.h>
+#include<iostream>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include<string.h>
+#include <sys/epoll.h>
+#include<vector>
+#include"Reactor.h"
+#include "EventHandler.h"
+using namespace std;
+
+class EchoHandler :public EventHandler
+{
+public:
+	EchoHandler(int fd)
+	{
+		m_fd = fd;
+	}
+	void HandleRead()
+	{
+		cout << "in the read" << endl;
+		char buf[1024];
+		memset(buf, 0, sizeof(buf));
+		int n = recv(m_fd, buf, sizeof(buf), 0);
+		if (n <= 0)
+		{
+			Reactor::getReactor()->RemoveHand(this);
+			return;
+		}
+		printf("the recvBuf=%s\n", buf);
+		Reactor::getReactor()->RegisterHand(this, kReadEvent);
+		//Reactor::getReactor()->RegisterHand(this, kWriteEvent);
+	}
+	void HandleWrite()
+	{
+
+	}
+
+	void HandleError()
+	{
+
+	}
+};
+
+class ServerHandler :public EventHandler
+{
+public:
+	void start()
+	{
+		struct sockaddr_in server;
+		int socklen;
+		int opt;
+		m_fd = socket(AF_INET, SOCK_STREAM, 0);
+		if (setsockopt(m_fd, SOL_SOCKET, SO_REUSEADDR, (void*)&opt, sizeof(int)) < 0)
+		{
+			cout << " setsockopt error" << endl;
+		}
+
+		memset(&server, 0, sizeof(server));
+		server.sin_family = AF_INET;
+		server.sin_port = htons(11000);
+		server.sin_addr.s_addr = inet_addr("172.16.16.93");
+		if (bind(m_fd, (struct sockaddr*) & server, sizeof(server)) < 0)
+		{
+			printf("bind error\n");
+		}
+
+		if (listen(m_fd, 10) < 0)
+		{
+			cout << "listen error" << endl;
+		}
+		Reactor::getReactor()->RegisterHand(this, kReadEvent);
+		cout << "in the start fd=" <<m_fd<< endl;
+
+	}
+	void HandleRead()
+	{
+		struct sockaddr_in client;
+		socklen_t len = sizeof(client);
+		cout << "before the accept" << endl;
+		int con = accept(m_fd, (struct sockaddr*) & client, &len);
+		if (con <= 0)
+		{
+			return;
+		}
+		EventHandler* hand = new EchoHandler(con);
+		Reactor::getReactor()->RegisterHand(hand, kReadEvent);
+		cout << "in the ServerHandler after the accept>0" << endl;
+		//Reactor::getReactor()->RegisterHand(this, kReadEvent);
+
+		//cout << "EventHandler* hand = new EchoHandler(con);" << endl;
+		//Reactor::getReactor()->RegisterHand(hand, kWriteEvent);	
+	}
+
+	void HandleWrite()
+	{
+
+	}
+	void HandleError()
+	{
+
+	}
+
+};
+
+class String
+{
+private:
+	char* m_data;
+public:
+	String(const char* data)
+	{
+		if (data == NULL)
+		{
+			m_data = new char[1];
+			*m_data = '\0';
+		}
+		else
+		{
+			int len = strlen(data);
+			m_data = new char[len + 1];
+			strncpy(m_data, data, len);
+			m_data[len] = '\0';
+		}
+		cout << "in the construct fun" << endl;
+	}
+	~String()
+	{
+		if (m_data != NULL)
+		{
+			delete[] m_data;
+			m_data = NULL;
+		}
+		cout << "the deconstruct fun" << endl;
+	}
+};
+
+
+int main()
+{
+	//ServerHandler server;
+	//server.start();
+	//Reactor::getReactor()->loop();
+
+
+	int a;
+	char str[100] = "haohaoxuexi";
+	 char& f = *str;
+	 printf("f=%s\n", &f);
+	
+}
+
