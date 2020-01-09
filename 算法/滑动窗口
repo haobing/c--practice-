@@ -1,0 +1,90 @@
+可以看https://leetcode-cn.com/problems/minimum-window-substring/solution/hua-dong-chuang-kou-suan-fa-tong-yong-si-xiang-by-/
+滑动窗口主要是一个窗口有两个指针，左指针向右移动，向窗口加入新的字符串，左指针向右移动，删除不符合要求的字符串；
+3、给定一个字符串，请你找出其中不含有重复字符的 最长子串 的长度。*********************************************************
+  解法一：滑动窗口
+int getMaxLen1(string str)
+{
+	vector<char> q;
+	int maxLen = 0;
+	for (int i = 0; i < str.size(); i++)
+	{
+		while (find(q.begin(), q.end(), str[i]) != q.end())
+		{
+			q.erase(q.begin());
+		}
+		q.push_back(str[i]);
+		maxLen = max(maxLen, (int)q.size());
+		
+	}
+	return maxLen;
+}
+解法二：
+  int getMaxLen2(string str)
+{
+	int len = str.size();
+	int k = 0;
+	int maxLen = 0;
+	for (int i = 0; i < len; i++)
+	{
+		for (int j = k; j < i; j++)
+		{
+			if (str[j] == str[i])
+			{
+				k = j + 1;
+				continue;
+			}
+		}
+
+		maxLen = max(maxLen, i-k+1);
+	}
+	return maxLen;
+}
+
+//给你一个字符串 S、一个字符串 T，请在字符串 S 里面找出：包含 T 所有字母的最小子串************************************************
+
+string getMinStr(string srcStr,string needStr)
+{
+	int len1 = srcStr.size();
+	int len2 = needStr.size();
+	unordered_map<char, int> window;
+	unordered_map<char, int> needs;
+	for (char c : needStr)
+	{
+		needs[c]++;
+	}
+	int left = 0, right = 0, minLen = len1;
+	int match = 0;
+	int start = 0, end = 0;
+	while (right < len1)
+	{
+		char cur = srcStr[right];
+		if (needs.count(cur))
+		{
+			window[cur]++;
+			if (window[cur] == needs[cur])
+			{
+				match++;
+			}
+		}
+		while (match == needs.size())
+		{
+			if (minLen > right - left + 1)
+			{
+				start = left;
+				end = right;
+			}
+			char cur = srcStr[left];
+			if (needs.count(cur))
+			{
+				window[cur]--;
+				if (window[cur] < needs[cur])
+				{
+					match--;
+				}
+			}
+			left++;
+		}
+		right++;
+	}
+	return srcStr.substr(start, end - start+1);
+}
